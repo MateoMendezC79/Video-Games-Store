@@ -51,7 +51,7 @@ INSERT INTO cliente_producto VALUES (5,4),(5,5),(4,2),(3,1),(3,2),(3,3),(2,1),(1
 
 
 
-CREATE PROCEDURE informacion_asesor
+CREATE PROCEDURE informacion_asesor_cliente
 AS
 begin	
 SELECT cliente.id_cliente,cliente.nombre,asesor.id_asesor,asesor.nombre,asesor.id_tienda FROM asesor,cliente
