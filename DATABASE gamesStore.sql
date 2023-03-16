@@ -4,7 +4,7 @@ CREATE TABLE tienda(
 id_tienda INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
 nombre VARCHAR (100) NOT NULL,
 direccion VARCHAR (100) NOT NULL,
-numero_trabajadores VARCHAR (100) NOT NULL
+numero_trabajadores INT NOT NULL
 );
 CREATE TABLE producto(
 id_producto INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
@@ -51,28 +51,42 @@ INSERT INTO cliente_producto VALUES (5,4),(5,5),(4,2),(3,1),(3,2),(3,3),(2,1),(1
 
 
 
-CREATE PROCEDURE informacion_asesor_cliente
+CREATE PROCEDURE informacion_asesor_cliente (@id_cliente INT)
 AS
 begin	
 SELECT cliente.id_cliente,cliente.nombre,asesor.id_asesor,asesor.nombre,asesor.id_tienda FROM asesor,cliente
-WHERE asesor.id_asesor=cliente.id_asesor 
+WHERE @id_cliente = cliente.id_cliente AND asesor.id_asesor=cliente.id_asesor 
 END
 
 
-CREATE PROCEDURE informacion_tienda_asesor
+CREATE PROCEDURE nueva_sede (@nombre VARCHAR,@direccion VARCHAR,@numero_trabajadores INT)
 AS
 begin	
-SELECT tienda.nombre,tienda.direccion,tienda.numero_trabajadores,asesor.id_asesor,asesor.nombre,asesor.apellido,asesor.edad FROM tienda,asesor
-WHERE tienda.id_tienda=asesor.id_tienda
+INSERT INTO tienda 
+VALUES (@nombre,@direccion,@numero_trabajadores)
 END
 
 
-CREATE PROCEDURE informacion_ganancia_total
+CREATE PROCEDURE ganancia_total_juego(@id_producto INT)
 AS
 begin	
 SELECT cliente_producto.id_cliente_producto,cliente.nombre,producto.id_producto,producto.nombre,producto.categoria,producto.precio,
 SUM(SUM(producto.precio)) over (order by cliente_producto.id_cliente_producto ASC) AS total_acumulado 
 FROM cliente,producto,cliente_producto
-WHERE producto.id_producto=cliente_producto.id_producto AND cliente.id_cliente=cliente_producto.id_cliente
+WHERE @id_producto=producto.id_producto AND producto.id_producto=cliente_producto.id_producto AND cliente.id_cliente=cliente_producto.id_cliente
 GROUP BY cliente_producto.id_cliente_producto,cliente.nombre,producto.id_producto,producto.nombre,producto.categoria,producto.precio
+END
+
+CREATE PROCEDURE actualizar_edadd (@id_asesor INT,@edad INT)
+AS
+begin	
+UPDATE asesor SET @edad = asesor.edad
+WHERE @id_asesor = asesor.id_asesor
+END
+
+CREATE PROCEDURE eliminar_juego (@id_producto INT)
+AS
+begin	
+DELETE FROM producto
+WHERE @id_producto = producto.id_producto
 END
